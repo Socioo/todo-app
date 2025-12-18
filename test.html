@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test OAuth Flow</title>
+</head>
+<body>
+    <h1>Test OAuth Redirect</h1>
+    
+    <h2>Method 1: Direct Link (Should work)</h2>
+    <a href="http://localhost:3001/auth/google" target="_blank">
+        Click here to test OAuth
+    </a>
+    
+    <h2>Method 2: Button with JavaScript</h2>
+    <button onclick="window.location.href='http://localhost:3001/auth/google'">
+        Sign in with Google
+    </button>
+    
+    <h2>Debug Info:</h2>
+    <p>Test backend: <a href="http://localhost:3001/test" target="_blank">Backend Test</a></p>
+    <p>Test auth: <a href="http://localhost:3001/auth/test-auth" target="_blank">Auth Test</a></p>
+    
+    <script>
+        // Check for token in URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const token = urlParams.get('token');
+        
+        if (token) {
+            document.body.innerHTML += `
+                <h2 style="color: green;">✅ Success! Got Token:</h2>
+                <p><strong>Token:</strong> ${token.substring(0, 50)}...</p>
+                <button onclick="testToken()">Test Token</button>
+            `;
+        }
+        
+        function testToken() {
+            fetch('http://localhost:3001/auth/me', {
+                headers: {
+                    'Authorization': 'Bearer ' + token
+                }
+            })
+            .then(res => res.json())
+            .then(data => console.log('User:', data))
+            .catch(err => console.error('Error:', err));
+        }
+    </script>
+</body>
+</html>
